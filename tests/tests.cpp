@@ -1,8 +1,68 @@
-#include <iostream>
+#include "gtest/gtest.h"
 #include "lfu_cache.hpp"
 
-int main() {
-    //LFUCache* obj = new LFUCache{2};
+TEST(LFUCacheTests, GetCachedElement) {
+    LFUCache obj{2};
+    obj.put(1, 3);
+    obj.put(2, 9);
+
+    EXPECT_EQ(obj.get(2), 9);
+    EXPECT_EQ(obj.get(1), 3);
+}
+
+TEST(LFUCacheTests, GetNotCachedElement) {
+    LFUCache obj{2};
+    obj.put(1, 3);
+    obj.put(2, 9);
+
+    EXPECT_EQ(obj.get(3), -1);
+}
+
+TEST(LFUCacheTests, PutElement) {
+    LFUCache obj{2};
+
+    EXPECT_EQ(obj.get(1), -1);
+
+    obj.put(1, 3);
+
+    EXPECT_EQ(obj.get(1), 3);
+}
+
+TEST(LFUCacheTests, ReplaceCacheElement) {
+    LFUCache obj{2};
+
+    obj.put(1, 3);
+
+    EXPECT_EQ(obj.get(1), 3);
+
+    obj.put(1, 7);
+
+    EXPECT_EQ(obj.get(1), 7);
+
+}
+
+TEST(LFUCacheTests, InvalidateLeastRecentlyUsedElement) {
+    LFUCache obj{2};
+    obj.put(1, 3);
+    obj.put(2, 7);
+    obj.put(5, 7);
+
+    EXPECT_EQ(obj.get(1), -1);
+    EXPECT_EQ(obj.get(5), 7);
+}
+
+TEST(LFUCacheTests, InvalidateLeastFrequentlyUsedElement) {
+    LFUCache obj{2};
+    obj.put(1, 3);
+    obj.put(2, 7);
+    obj.get(1);
+    obj.put(5, 7);
+
+    EXPECT_EQ(obj.get(2), -1);
+    EXPECT_EQ(obj.get(5), 7);
+}
+
+TEST(LFUCacheTests, FailedTest1) {
     LFUCache obj{105};
     obj.put(33, 219);
     obj.get(39);
@@ -522,5 +582,6 @@ int main() {
     obj.get(35);
     obj.get(80);
     obj.put(10, 288);
-    obj.get(21);
+    //obj.get(21);
+    EXPECT_EQ(obj.get(21), 139);
 }
