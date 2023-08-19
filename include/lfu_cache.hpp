@@ -2,6 +2,7 @@
 #include <algorithm>
 #include <vector>
 #include <unordered_map>
+#include <list>
 
 struct CountValuePair {
     int value;
@@ -15,7 +16,6 @@ private:
 
 public:
     LFUCache(int capacity) {
-        recently_used_elements = std::vector<int>{};
         map_ = Map{};
         this->capacity = capacity;
     }
@@ -45,10 +45,10 @@ public:
             // if yes: remove least frequently used element
             int removed_key = remove_lfu_element();
 
-            auto key_it = std::find(recently_used_elements.cbegin(), recently_used_elements.cend(), removed_key);
-            if (key_it != recently_used_elements.cend()) {
-                recently_used_elements.erase(key_it);
-            }
+            // auto key_it = std::find(recently_used_elements.cbegin(), recently_used_elements.cend(), removed_key);
+            // if (key_it != recently_used_elements.cend()) {
+            //     recently_used_elements.erase(key_it);
+            // }
         }
         // insert new one
         insert_element(key, value);
@@ -100,18 +100,19 @@ private:
     int remove_lfu_element() {
         auto least_used_items = find_least_used_items(map_.begin(), map_.end());
 
-        if (least_used_items.size() == 1) {
-            int removed_key = least_used_items[0]->first;
-            map_.erase(least_used_items[0]);
-            return removed_key;
-        }
+        // if (least_used_items.size() == 1) {
+        //     int removed_key = least_used_items[0]->first;
+        //     map_.erase(least_used_items[0]);
+        //     return removed_key;
+        // }
 
-        for (auto used_key: recently_used_elements)
+        for (auto used_key_it = recently_used_elements.begin(); used_key_it != recently_used_elements.end(); ++used_key_it)
         {
             for (auto least_used_item: least_used_items) {
-                if (used_key == least_used_item->first) {
-                    int removed_key = least_used_item->first;
+                if (*used_key_it == least_used_item->first) {
+                    int removed_key = 0;
                     map_.erase(least_used_item);
+                    recently_used_elements.erase(used_key_it);
                     return removed_key;
                 }
             }
