@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# GTest
+build
+
+# Visual Studio Code
+.vscode
